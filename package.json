@@ -1,0 +1,21 @@
+{
+  "name": "brave-block-explainer",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "lint": "./node_modules/standard/bin/cmd.js",
+    "lint-fix": "./node_modules/standard/bin/cmd.js --fix"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "adblock-rs": "^0.1.34",
+    "argparse": "^1.0.10",
+    "puppeteer": "^1.20.0",
+    "request": "^2.88.0",
+    "request-promise": "^4.2.4",
+    "request-promise-native": "^1.0.7",
+    "standard": "^14.3.1"
+  }
+}
