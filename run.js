@@ -8,19 +8,23 @@ const braveCrawlLib = require('./brave/crawl')
 const braveListsLib = require('./brave/lists')
 const braveReportLib = require('./brave/report')
 
-const parser = new argparseLib.ArgumentParser()
+const defaultListNames = braveListsLib.listNames().join(', ')
+
+const parser = new argparseLib.ArgumentParser({
+  description: `Command line tool for determining which filter lists are responsible for blocking requests in brave.  by default evaluates the following lists: (${defaultListNames}).`
+})
 parser.addArgument(['-u', '--url'], {
   required: true,
-  help: 'The url to determine blocking behavior on'
+  help: 'The url to determine blocking behavior on.'
 })
 parser.addArgument(['-l', '--lists'], {
   append: true,
   defaultValue: Object.values(braveListsLib.listUrls()),
-  help: 'The filter lists to evaluate / match against'
+  help: 'The filter lists to evaluate / match against.  By default uses all the filter lists Brave uses by default, along with the Japan regional filter list.'
 })
 parser.addArgument(['-s', '--secs'], {
   defaultValue: 10,
-  help: 'Number of seconds to spend on the page'
+  help: 'Number of seconds to spend on the page.'
 })
 parser.addArgument(['-r', '--rule'], {
   storeTrue: true,

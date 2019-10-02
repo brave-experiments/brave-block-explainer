@@ -20,10 +20,12 @@ const _listUrlsToNames = Object.entries(_listNamesToUrls)
   }, Object.create(null))
 
 const listUrls = _ => Object.values(_listNamesToUrls)
+const listNames = _ => Object.keys(_listNamesToUrls)
 
 const nameForListUrl = url => _listUrlsToNames[url]
 
 module.exports = {
+  listNames,
   listUrls,
   nameForListUrl
 }
