@@ -16,6 +16,7 @@ const _listUrlsToNames = Object.entries(_listNamesToUrls)
   .reduce((prev, cur) => {
     const [name, url] = cur
     prev[url] = name
+    return prev
   }, Object.create(null))
 
 const listUrls = _ => Object.values(_listNamesToUrls)

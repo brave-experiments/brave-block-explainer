@@ -2,6 +2,7 @@
 'use strict'
 
 const argparseLib = require('argparse')
+const validUrlLib = require('valid-url')
 
 const braveCrawlLib = require('./brave/crawl')
 const braveListsLib = require('./brave/lists')
@@ -21,9 +22,18 @@ parser.addArgument(['-s', '--secs'], {
   defaultValue: 10,
   help: 'Number of seconds to spend on the page'
 })
+parser.addArgument(['-r', '--rule'], {
+  storeTrue: true,
+  help: 'If provided, will also print which filter list rule blocked each url.'
+})
 const args = parser.parseArgs();
+
+if (!validUrlLib.isWebUri(args.url)) {
+  console.error(`--url must be a valid, complete url`)
+  process.exit(1)
+}
 
 (async () => {
   const report = await braveCrawlLib.crawl(args)
-  braveReportLib.printReport(report)
+  braveReportLib.printReport(report, args.rule)
 })()

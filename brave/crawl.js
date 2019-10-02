@@ -66,6 +66,7 @@ const crawl = async args => {
 
   page.removeListener('request', onRequestFunc)
   await browser.close()
+  return blockReport
 }
 
 module.exports = {
