@@ -2,7 +2,8 @@
 
 const adBlockRsLib = require('adblock-rs')
 const puppeteerLib = require('puppeteer')
-const requestPromiseLib = require('request-promise')
+
+const listsLib = require('./lists')
 
 const onRequestCallback = async (blockReport, adBlockEngines, request) => {
   const frame = request.frame()
@@ -17,10 +18,12 @@ const onRequestCallback = async (blockReport, adBlockEngines, request) => {
   for (const [listUrl, engine] of Object.entries(adBlockEngines)) {
     const matchResult = engine.check(requestUrl, frameUrl, requestType, true)
     if (matchResult.matched) {
-      blockReport[listUrl][requestUrl] = matchResult.filter
-      break
+      blockReport.blocked[listUrl][requestUrl] = matchResult.filter
+      return
     }
   }
+
+  blockReport.allowed.push(requestUrl)
 }
 
 const crawl = async args => {
@@ -30,14 +33,17 @@ const crawl = async args => {
   }
 
   const adBlockEngines = Object.create(null)
-  const blockReport = Object.create(null)
+  const blockReport = {
+    blocked: {},
+    allowed: []
+  }
 
   for (const listUrl of args.lists) {
-    const filterListText = (await requestPromiseLib(listUrl)).trim()
+    const filterListText = await listsLib.getListContent(listUrl, args)
     const filterListRules = filterListText.split('\n')
     const adBlockEngine = new adBlockRsLib.Engine(filterListRules, adBlockArgs)
     adBlockEngines[listUrl] = adBlockEngine
-    blockReport[listUrl] = Object.create(null)
+    blockReport.blocked[listUrl] = {}
   }
 
   const onRequestFunc = onRequestCallback.bind(undefined, blockReport, adBlockEngines)

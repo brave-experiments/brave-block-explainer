@@ -1,6 +1,8 @@
 #!/usr/bin/env node
 'use strict'
 
+const fsLib = require ('fs')
+
 const argparseLib = require('argparse')
 const validUrlLib = require('valid-url')
 
@@ -27,17 +29,34 @@ parser.addArgument(['-s', '--secs'], {
   help: 'Number of seconds to spend on the page.'
 })
 parser.addArgument(['-r', '--rule'], {
-  storeTrue: true,
-  help: 'If provided, will also print which filter list rule blocked each url.'
+  action: 'storeTrue',
+  help: 'If provided, will also print which filter list rule blocked each url (automatically done for JSON output).'
 })
+parser.addArgument(['-a', '--allowed'], {
+  action: 'storeTrue',
+  help: 'If provided, will also print which requests were allowed / not blocked.'
+})
+parser.addArgument(['-j', '--json'], {
+  action: 'storeTrue',
+  help: 'Output results as JSON, instead of a console report.'
+})
+parser.addArgument(['-c', '--cache'], {
+  help: 'If provided, should be a directory to read and write cached versions of filter lists.'
+})
+
 const args = parser.parseArgs();
 
 if (!validUrlLib.isWebUri(args.url)) {
-  console.error(`--url must be a valid, complete url`)
+  console.error(`--url must be a valid, complete url.`)
+  process.exit(1)
+}
+
+if (args.cache && fsLib.statSync(args.cache).isDirectory() === false) {
+  console.error(`--cache must point to a directory.`)
   process.exit(1)
 }
 
 (async () => {
   const report = await braveCrawlLib.crawl(args)
-  braveReportLib.printReport(report, args.rule)
+  braveReportLib.printReport(report, args)
 })()
